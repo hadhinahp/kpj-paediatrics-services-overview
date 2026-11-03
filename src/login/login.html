@@ -14,9 +14,10 @@
 <style id="login-css">
   :root { color-scheme: only light; --navy: #0f2a44; --navy-2: #16365a; --teal: #0f7c80; --aqua: #e3f4f3; --bronze: #7a6249; --page: #faf8f4; --line: #e6e1d8; --ink: #1b2733; --muted: #5f6b77; --err: #a1261c; --err-bg: #fdecea; --focus: #1f6fd1; }
   * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--page); background-image: radial-gradient(1200px 600px at 85% -10%, #dff1ef 0%, rgba(223, 241, 239, 0) 60%), radial-gradient(900px 500px at -10% 110%, #f1e9df 0%, rgba(241, 233, 223, 0) 60%); display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
-  .login { width: 100%; max-width: 440px; }
+  html { height: 100%; }
+  /* margin:auto centring keeps the top reachable when content is taller than the screen */
+  body { margin: 0; min-height: 100%; font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--page); background-image: radial-gradient(1200px 600px at 85% -10%, #dff1ef 0%, rgba(223, 241, 239, 0) 60%), radial-gradient(900px 500px at -10% 110%, #f1e9df 0%, rgba(241, 233, 223, 0) 60%); display: flex; flex-direction: column; padding: 28px 16px; }
+  .login { width: 100%; max-width: 440px; margin: auto; }
   .panel { background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 18px 48px rgba(15, 42, 68, .10), 0 2px 6px rgba(15, 42, 68, .05); padding: 34px 32px 28px; }
   .logo { display: block; height: 40px; width: auto; margin: 0 0 26px; }
   .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); background: var(--aqua); border-radius: 999px; padding: 4px 10px; margin-bottom: 12px; }
@@ -31,7 +32,8 @@
   .toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; color: var(--navy-2); font: inherit; font-size: 13px; font-weight: 650; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
   .toggle:hover { background: #f3f5f7; }
   .toggle:focus-visible, .submit:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-  .hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; min-height: 1em; }
+  .hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .hint:empty { margin: 0; }
   .error { display: none; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--err-bg); color: var(--err); font-size: 14px; font-weight: 600; border: 1px solid #f3c6c1; }
   .error.show { display: flex; gap: 8px; align-items: flex-start; }
   .error svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
@@ -44,20 +46,34 @@
   .busy .lock-ic { display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } }
-  .status { font-size: 13px; color: var(--muted); margin-top: 10px; min-height: 1.2em; text-align: center; }
-  .foot { margin-top: 18px; font-size: 12.5px; color: var(--muted); line-height: 1.5; text-align: center; padding: 0 6px; }
+  .status { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: center; }
+  .status:empty { margin: 0; }
+  .foot { margin-top: 20px; font-size: 12.5px; color: var(--muted); line-height: 1.5; text-align: center; padding: 0 6px; }
   .foot strong { color: var(--bronze); }
   noscript .error { display: block; }
   @media (prefers-color-scheme: dark) { :root { color-scheme: only light; } html, body { background-color: #faf8f4; color: #1b2733; } .panel { background: #fff; } }
   @media (max-width: 480px) { .panel { padding: 26px 20px 22px; } h1 { font-size: 21px; } .logo { height: 34px; } }
   /* Dark-mode tip: shown only when the device is set to dark mode */
-  .dark-tip { display: none; margin-top: 16px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 12px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
-  @media (prefers-color-scheme: dark) { .dark-tip { display: block; } }
-  .dark-tip strong { color: var(--navy); }
-  .dark-tip summary { cursor: pointer; font-weight: 650; color: var(--teal); margin-top: 6px; }
+  .dark-tip { display: none; margin-top: 14px; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 42, 68, .07), 0 1px 3px rgba(15, 42, 68, .04); padding: 18px 20px; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+  @media (prefers-color-scheme: dark) { .dark-tip { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; align-items: start; } }
+  .tip-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--aqua); color: var(--teal); display: grid; place-items: center; }
+  .tip-icon svg { width: 18px; height: 18px; }
+  .tip-title { margin: 1px 0 4px; font-size: 14.5px; font-weight: 700; color: var(--navy); }
+  .tip-text { margin: 0; color: var(--muted); }
+  .dark-tip details { margin-top: 10px; }
+  .dark-tip summary { list-style: none; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 650; color: var(--teal); padding: 2px 0; }
+  .dark-tip summary::-webkit-details-marker { display: none; }
+  .dark-tip summary::after { content: ""; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .15s; }
+  .dark-tip details[open] summary::after { transform: rotate(-135deg) translate(-1px, -1px); }
   .dark-tip summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
-  .dark-tip ul { margin: 8px 0 0; padding-left: 1.2em; }
-  .dark-tip li { margin-bottom: 6px; }
+  .tip-steps { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .tip-steps li { padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--ink); }
+  .tip-steps li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .tip-steps strong { display: block; color: var(--navy); font-size: 13px; margin-bottom: 1px; }
+  .tip-steps em { font-style: normal; font-weight: 600; color: var(--navy-2); }
+  @media (max-width: 480px) { .dark-tip { padding: 16px; } }
+  @media (max-width: 480px) and (prefers-color-scheme: dark) { .dark-tip { gap: 12px; } }
+  @media (prefers-reduced-motion: reduce) { .dark-tip summary::after { transition: none; } }
 </style>
 </head>
 <body>
@@ -84,18 +100,22 @@
       <div class="status" id="pw-status" role="status" aria-live="polite"></div>
     </form>
   </div>
-  <aside class="dark-tip" aria-label="Tip for dark mode">
-    <strong>Page looks dark?</strong> This dashboard is designed to be viewed in light colours. If it appears dark, your browser’s own dark mode is overriding it.
-    <details>
-      <summary>How to switch it off</summary>
-      <ul>
-        <li><strong>Samsung Internet:</strong> tap the menu (☰) and turn off <em>Dark mode</em>, or go to Settings → Labs and turn on <em>Use website dark theme</em>.</li>
-        <li><strong>Opera:</strong> Settings → turn off <em>Force dark pages</em>.</li>
-        <li><strong>Brave:</strong> Settings → Appearance → turn off <em>Night mode</em>.</li>
-        <li><strong>Chrome:</strong> if you turned on the <em>Auto Dark Mode for Web Contents</em> flag, set it back to Default in chrome://flags.</li>
-        <li><strong>Other browsers:</strong> look for “dark mode for websites” or “force dark” in the browser’s settings.</li>
-      </ul>
-    </details>
+  <aside class="dark-tip" aria-labelledby="tip-title">
+    <span class="tip-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></span>
+    <div>
+      <p class="tip-title" id="tip-title">Page looks dark?</p>
+      <p class="tip-text">This dashboard is designed for light colours. If it looks dark, your browser’s own dark mode is overriding it.</p>
+      <details>
+        <summary>How to switch it off</summary>
+        <ul class="tip-steps">
+          <li><strong>Samsung Internet</strong>Menu (☰) → turn off <em>Dark mode</em>, or Settings → Labs → turn on <em>Use website dark theme</em>.</li>
+          <li><strong>Opera</strong>Settings → turn off <em>Force dark pages</em>.</li>
+          <li><strong>Brave</strong>Settings → Appearance → turn off <em>Night mode</em>.</li>
+          <li><strong>Chrome</strong>In chrome://flags, set <em>Auto Dark Mode for Web Contents</em> back to Default.</li>
+          <li><strong>Other browsers</strong>Look for “dark mode for websites” or “force dark” in settings.</li>
+        </ul>
+      </details>
+    </div>
   </aside>
   <p class="foot">Content is encrypted (AES-256-GCM) and opened only in your browser. The password is never stored. <strong>Do not share the password</strong> outside the intended audience.</p>
 </main>
