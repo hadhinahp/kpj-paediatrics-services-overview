@@ -50,6 +50,14 @@
   noscript .error { display: block; }
   @media (prefers-color-scheme: dark) { :root { color-scheme: only light; } html, body { background-color: #faf8f4; color: #1b2733; } .panel { background: #fff; } }
   @media (max-width: 480px) { .panel { padding: 26px 20px 22px; } h1 { font-size: 21px; } .logo { height: 34px; } }
+  /* Dark-mode tip: shown only when the device is set to dark mode */
+  .dark-tip { display: none; margin-top: 16px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 12px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+  @media (prefers-color-scheme: dark) { .dark-tip { display: block; } }
+  .dark-tip strong { color: var(--navy); }
+  .dark-tip summary { cursor: pointer; font-weight: 650; color: var(--teal); margin-top: 6px; }
+  .dark-tip summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+  .dark-tip ul { margin: 8px 0 0; padding-left: 1.2em; }
+  .dark-tip li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -76,6 +84,19 @@
       <div class="status" id="pw-status" role="status" aria-live="polite"></div>
     </form>
   </div>
+  <aside class="dark-tip" aria-label="Tip for dark mode">
+    <strong>Page looks dark?</strong> This dashboard is designed to be viewed in light colours. If it appears dark, your browser’s own dark mode is overriding it.
+    <details>
+      <summary>How to switch it off</summary>
+      <ul>
+        <li><strong>Samsung Internet:</strong> tap the menu (☰) and turn off <em>Dark mode</em>, or go to Settings → Labs and turn on <em>Use website dark theme</em>.</li>
+        <li><strong>Opera:</strong> Settings → turn off <em>Force dark pages</em>.</li>
+        <li><strong>Brave:</strong> Settings → Appearance → turn off <em>Night mode</em>.</li>
+        <li><strong>Chrome:</strong> if you turned on the <em>Auto Dark Mode for Web Contents</em> flag, set it back to Default in chrome://flags.</li>
+        <li><strong>Other browsers:</strong> look for “dark mode for websites” or “force dark” in the browser’s settings.</li>
+      </ul>
+    </details>
+  </aside>
   <p class="foot">Content is encrypted (AES-256-GCM) and opened only in your browser. The password is never stored. <strong>Do not share the password</strong> outside the intended audience.</p>
 </main>
 <script>
