@@ -299,19 +299,24 @@ th[aria-sort="none"] .sort-ind::after { content: "↕"; }
 .g-axis-scale span { position: absolute; transform: translateX(-50%); }
 
 /* tile map */
-.tilemap-wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
-.tilemaps { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-start; }
-.tm-block { display: grid; gap: 6px; }
-.tm-caption { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
-.tilemap { display: grid; grid-template-columns: repeat(4, 76px); grid-auto-rows: 64px; gap: 5px; }
-.tilemap.borneo { grid-template-columns: repeat(3, 76px); }
-.tile { border-radius: 9px; padding: 6px 7px; font-size: 11px; line-height: 1.2; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0, 0, 0, .06); position: relative; cursor: default; }
-.tile .t-name { font-weight: 650; }
-.tile .t-val { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.tile.nokpj { background: repeating-linear-gradient(135deg, #f4f3f0, #f4f3f0 4px, #ebe9e4 4px, #ebe9e4 8px); color: #5f6b77; }
-.tile.nokpj .t-val { font-size: 10.5px; font-weight: 600; }
-.tile.dim { opacity: .28; }
-.tile:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* state map (SVG) */
+.map-wrap { width: 100%; overflow: hidden; }
+.mymap { display: block; width: 100%; height: auto; font-family: var(--font); }
+.mstate { stroke: #ffffff; stroke-width: 1; stroke-linejoin: round; cursor: pointer; transition: opacity .15s; }
+.mstate:hover { stroke: var(--navy-900); stroke-width: 1.6; }
+.mstate:focus { outline: none; }
+.mstate:focus-visible { stroke: var(--focus); stroke-width: 2.6; }
+.mstate.dim { opacity: .28; }
+.mlabel { pointer-events: none; }
+.mname { font-size: 11px; font-weight: 650; fill: var(--navy-900); }
+.mval { font-size: 14px; font-weight: 700; fill: var(--navy-900); font-variant-numeric: tabular-nums; }
+.msub { font-size: 10px; font-weight: 600; fill: var(--ink-2); }
+.mlabel text[fill] .msub, .mlabel text.msub[fill] { opacity: .92; }
+.mnone { font-size: 9.5px; font-style: italic; fill: #5f6b77; }
+.mleader { fill: none; stroke: #7c8a98; stroke-width: 0.8; }
+.mdot { fill: var(--navy-900); }
+.mdivider { stroke: #c9d3dc; stroke-width: 1; stroke-dasharray: 4 4; }
+.mpanel { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; fill: #6b7785; }
 .seg-ctl { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 10px; overflow: hidden; background: var(--surface); }
 .seg-ctl button { border: 0; background: transparent; padding: 6px 12px; font-size: 13px; cursor: pointer; font-weight: 600; color: var(--ink-2); }
 .seg-ctl button + button { border-left: 1px solid var(--line-strong); }
@@ -371,7 +376,6 @@ dialog.hosp-dialog::backdrop { background: rgba(11, 33, 54, .45); }
 @media (max-width: 1100px) {
   .g-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .g-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .tilemap-wrap { grid-template-columns: 1fr; }
 }
 @media (max-width: 920px) {
   :root { --header-h: 64px; }
@@ -410,9 +414,6 @@ dialog.hosp-dialog::backdrop { background: rgba(11, 33, 54, .45); }
   .input { min-width: 0; width: 100%; }
   .f-group, .search-wrap { width: 100%; }
   .f-actions { margin-left: 0; width: 100%; }
-  .tilemap { grid-template-columns: repeat(4, 64px); grid-auto-rows: 58px; }
-  .tilemap.borneo { grid-template-columns: repeat(3, 64px); }
-  .tile .t-val { font-size: 14px; }
   .kv { grid-template-columns: 1fr; }
   .flow { grid-template-columns: 1fr 26px 1fr; font-size: 12.5px; }
 }
@@ -425,5 +426,13 @@ dialog.hosp-dialog::backdrop { background: rgba(11, 33, 54, .45); }
   details.more > .more-body { display: block; }
 }
 @media (forced-colors: active) {
-  .bar-fill, .bar-seg, .g-bar, .code, .tile { forced-color-adjust: none; }
+  .bar-fill, .bar-seg, .g-bar, .code, .mstate { forced-color-adjust: none; }
+}
+
+/* state map on narrow screens: keep labels readable, scroll sideways within the card */
+.map-hint { display: none; font-size: 12px; color: var(--muted); margin-top: 6px; }
+@media (max-width: 760px) {
+  .map-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
+  .mymap { min-width: 860px; }
+  .map-hint { display: block; }
 }

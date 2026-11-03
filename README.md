@@ -9,6 +9,7 @@ kpj-paediatric-dashboard/
 ├─ site/                      PUBLISHED. Encrypted build only (login page + ciphertext + logo).
 ├─ src/
 │  ├─ app/                    Dashboard code: app.js, app.css, shell.html (no report content)
+│  │                          and malaysia-states.json (Natural Earth state boundaries, public domain)
 │  ├─ login/login.html        Branded sign-in page and in-browser decryption
 │  └─ assets/kpj-logo.png     KPJ Healthcare logo (taken unchanged from the supplied report)
 ├─ scripts/
@@ -33,7 +34,7 @@ Requirements: [Node.js](https://nodejs.org) 20 or later. There are no npm depend
 |---|---|
 | Executive overview | Headline figures, overall position, key findings, services at a glance, what it means, priority timeline, background |
 | Hospital comparison | All 29 hospitals: searchable, sortable and filterable by region, neonatal level and return status; a profile for each hospital with the report's notes and items to validate |
-| Workforce and capabilities | Unique doctors and appointment types, regions, subspecialty depth, a state tile map with child-population coverage index, nursing constraints, training |
+| Workforce and capabilities | Unique doctors and appointment types, regions, subspecialty depth, a map of Malaysia by state with a child-population coverage index, nursing constraints, training |
 | Services and coverage | Availability of 42 services (with denominators), a hospital × service matrix, neonatal levels and assessment, PICU/HDU, surgery, subspecialty, referrals, admissions, access |
 | Strengths and gaps | Strengths, gaps G1–G8, competitor comparison, operating environment |
 | Network planning | Provisional hub-and-spoke tiers, regional strengths, resource principles, referral infrastructure, proposed KPIs |

@@ -57,7 +57,10 @@ console.log(`Data checks: ${results.length} passed.`);
 const css = fs.readFileSync(rel('src', 'app', 'app.css'), 'utf8');
 const js = fs.readFileSync(rel('src', 'app', 'app.js'), 'utf8');
 const html = fs.readFileSync(rel('src', 'app', 'shell.html'), 'utf8');
-const payload = JSON.stringify({ v: 1, builtAt: new Date().toISOString(), css, js, html, data });
+// State boundaries (Natural Earth, public domain) travel inside the encrypted payload.
+const geo = JSON.parse(fs.readFileSync(rel('src', 'app', 'malaysia-states.json'), 'utf8'));
+const fullData = { ...data, geo };
+const payload = JSON.stringify({ v: 1, builtAt: new Date().toISOString(), css, js, html, data: fullData });
 
 // 3. Encrypt
 const enc = new TextEncoder();
@@ -86,7 +89,7 @@ if (args.has('--plain')) {
   const out = rel('private', 'build');
   fs.mkdirSync(path.join(out, 'assets'), { recursive: true });
   fs.copyFileSync(rel('src', 'assets', 'kpj-logo.png'), path.join(out, 'assets', 'kpj-logo.png'));
-  const page = `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>KPJ Paediatrics Services Overview (UNENCRYPTED PREVIEW)</title><style>${css}</style></head><body>${html}<script>${js}<\/script><script>KPJDashboard.start(${JSON.stringify(data)}, { onLock: function () { alert('Lock is disabled in the unencrypted preview.'); } });<\/script></body></html>`;
+  const page = `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>KPJ Paediatrics Services Overview (UNENCRYPTED PREVIEW)</title><style>${css}</style></head><body>${html}<script>${js}<\/script><script>KPJDashboard.start(${JSON.stringify(fullData)}, { onLock: function () { alert('Lock is disabled in the unencrypted preview.'); } });<\/script></body></html>`;
   fs.writeFileSync(path.join(out, 'dashboard-plain.html'), page);
   console.log('Unencrypted preview: private/build/dashboard-plain.html (never publish or commit this file).');
 }

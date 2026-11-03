@@ -517,28 +517,60 @@
       function countBand(t) { return t <= 5 ? 0 : t <= 10 ? 1 : t <= 20 ? 2 : t <= 30 ? 3 : 4; }
       function idxBand(i) { for (var k = 0; k < w.indexBands.length; k++) if (i >= w.indexBands[k].min) return w.indexBands[k]; return w.indexBands[w.indexBands.length - 1]; }
       var byName = {}; w.states.forEach(function (s) { byName[s.state] = s; });
-      var PEN = [['Perlis', 2, 1], ['Pulau Pinang', 1, 2, 'Penang'], ['Kedah', 2, 2], ['Kelantan', 3, 2], ['Terengganu', 4, 2], ['Perak', 2, 3], ['Pahang', 3, 3, null, 2], ['Selangor', 2, 4], ['Kuala Lumpur (FT)', 3, 4, 'KL (FT)'], ['Putrajaya (FT)', 2, 5, 'Putrajaya'], ['Negeri Sembilan', 3, 5, 'N. Sembilan'], ['Melaka', 2, 6], ['Johor', 3, 6, null, 2]];
-      var BOR = [['Labuan (FT)', 2, 1, 'Labuan'], ['Sabah', 3, 1], ['Sarawak', 1, 2, null, 2]];
-      function tile(def) {
-        var s = byName[def[0]]; var name = def[3] || def[0];
-        var style = 'grid-column:' + def[1] + (def[4] ? ' / span ' + def[4] : '') + ';grid-row:' + def[2] + ';';
-        if (s.noKpj) {
-          var tipN = def[0] + ': no KPJ hospital (not zero workforce). Children aged 0–18: ' + fmt(s.children) + 'k (2023 est.)';
-          return '<div class="tile nokpj' + (S.regions.length ? ' dim' : '') + '" style="' + style + '" tabindex="0" role="img" aria-label="' + esc(tipN) + '" data-tip="' + esc(tipN) + '"><span class="t-name">' + esc(name) + '</span><span class="t-val">No KPJ</span></div>';
+      var G = D.geo;
+      var LEFT = 132; // extra room west of the peninsula for callout labels
+      // Callout positions for small states: [labelX, labelY, anchor]; others are labelled inside.
+      var CALLOUT = {
+        'Perlis': [-14, 66, 'end'], 'Kedah': [-14, 106, 'end'], 'Pulau Pinang': [-14, 150, 'end'],
+        'Selangor': [-14, 232, 'end'], 'Kuala Lumpur (FT)': [-14, 274, 'end'], 'Putrajaya (FT)': [-14, 314, 'end'],
+        'Negeri Sembilan': [-14, 356, 'end'], 'Melaka': [-14, 400, 'end'],
+        'Terengganu': [286, 128, 'start'], 'Labuan (FT)': [712, 104, 'end']
+      };
+      var SHORT = {};
+      var shapes = '', labels = '';
+      G.states.forEach(function (g) {
+        var s = byName[g.name];
+        if (!s) return;
+        var dim = s.noKpj ? S.regions.length > 0 : !regionMatch(s.region);
+        var fill, fg, val, sub = '';
+        if (s.noKpj) { fill = 'url(#nokpj)'; fg = '#5f6b77'; }
+        else if (metric === 'total') { var b = countBand(s.total); fill = countColors[b]; fg = b >= 3 ? '#fff' : '#0b3f40'; val = String(s.total); sub = 'R' + s.r + (s.s ? ' S' + s.s : '') + (s.v ? ' V' + s.v : ''); }
+        else { var ib = idxBand(s.index); fill = idxColors[ib.label][0]; fg = idxColors[ib.label][1]; val = String(s.index); }
+        var tip = s.noKpj
+          ? g.name + ': no KPJ hospital (not zero workforce). Children aged 0–18: ' + fmt(s.children) + 'k (2023 est.)'
+          : g.name + ' (' + s.region + '): ' + s.hosp + ' KPJ hospital' + (s.hosp > 1 ? 's' : '') + '; ' + s.total + ' specialists (R' + s.r + ' S' + s.s + ' V' + s.v + '); ' + s.sub + ' subspecialists; ' + fmt(s.children) + 'k children; ' + s.perMillion + ' per million; index ' + s.index + ' (' + idxBand(s.index).label.toLowerCase() + ')';
+        shapes += '<path class="mstate' + (dim ? ' dim' : '') + '" d="' + g.d + '" fill="' + fill + '" tabindex="0" role="img" aria-label="' + esc(tip) + '" data-tip="' + esc(tip) + '"></path>';
+        var name = SHORT[g.name] || g.name;
+        var co = CALLOUT[g.name];
+        var op = dim ? ' opacity="0.3"' : '';
+        if (co) {
+          var lx = co[0], ly = co[1], anc = co[2];
+          labels += '<g class="mlabel"' + op + ' aria-hidden="true"><polyline points="' + (lx + (anc === 'end' ? 4 : -4)) + ',' + (ly - 4) + ' ' + g.cx + ',' + g.cy + '" class="mleader"></polyline><circle cx="' + g.cx + '" cy="' + g.cy + '" r="2" class="mdot"></circle>' +
+            '<text x="' + lx + '" y="' + (ly - 8) + '" text-anchor="' + anc + '" class="mname">' + esc(name) + '</text>' +
+            (s.noKpj ? '<text x="' + lx + '" y="' + (ly + 5) + '" text-anchor="' + anc + '" class="mnone">No KPJ hospital</text>'
+              : '<text x="' + lx + '" y="' + (ly + 8) + '" text-anchor="' + anc + '" class="mval">' + esc(val) + (sub ? '<tspan class="msub" dx="5">' + esc(sub) + '</tspan>' : '') + '</text>') + '</g>';
+        } else {
+          var big = g.area > 2500;
+          labels += '<g class="mlabel"' + op + ' aria-hidden="true">' +
+            '<text x="' + g.cx + '" y="' + (g.cy - (s.noKpj ? 2 : 6)) + '" text-anchor="middle" class="mname" fill="' + fg + '">' + esc(name) + '</text>' +
+            (s.noKpj ? '<text x="' + g.cx + '" y="' + (g.cy + 10) + '" text-anchor="middle" class="mnone">No KPJ hospital</text>'
+              : '<text x="' + g.cx + '" y="' + (g.cy + 11) + '" text-anchor="middle" class="mval" fill="' + fg + '">' + esc(val) + '</text>' +
+                (sub && big ? '<text x="' + g.cx + '" y="' + (g.cy + 24) + '" text-anchor="middle" class="msub" fill="' + fg + '">' + esc(sub) + '</text>' : '')) + '</g>';
         }
-        var dim = !regionMatch(s.region);
-        var bg, fg, val;
-        if (metric === 'total') { var b = countBand(s.total); bg = countColors[b]; fg = b >= 3 ? '#fff' : '#0b3f40'; val = s.total; }
-        else { var ib = idxBand(s.index); bg = idxColors[ib.label][0]; fg = idxColors[ib.label][1]; val = s.index; }
-        var tip = def[0] + ' (' + s.region + '): ' + s.hosp + ' KPJ hospital' + (s.hosp > 1 ? 's' : '') + '; ' + s.total + ' specialists (R' + s.r + ' S' + s.s + ' V' + s.v + '); ' + s.sub + ' subspecialists; ' + fmt(s.children) + 'k children; ' + s.perMillion + ' per million; index ' + s.index + ' (' + idxBand(s.index).label.toLowerCase() + ')';
-        return '<div class="tile' + (dim ? ' dim' : '') + '" style="' + style + 'background:' + bg + ';color:' + fg + '" tabindex="0" role="img" aria-label="' + esc(tip) + '" data-tip="' + esc(tip) + '"><span class="t-name">' + esc(name) + '</span><span class="t-val">' + val + '</span></div>';
-      }
+      });
+      var svg = '<svg class="mymap" viewBox="' + (-LEFT) + ' 0 ' + (G.w + LEFT) + ' ' + G.h + '" role="group" aria-label="Map of Malaysia by state: ' + (metric === 'total' ? 'KPJ paediatric specialists' : 'coverage index') + '. Focus a state for its figures; the table below lists every value.">' +
+        '<defs><pattern id="nokpj" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#f1f0ec"></rect><line x1="0" y1="0" x2="0" y2="6" stroke="#d6d3cc" stroke-width="2.4"></line></pattern></defs>' +
+        '<rect x="' + (-LEFT) + '" y="0" width="' + (G.w + LEFT) + '" height="' + G.h + '" fill="#f4f8fa" rx="10"></rect>' +
+        '<line x1="' + G.divider + '" y1="18" x2="' + G.divider + '" y2="' + (G.h - 18) + '" class="mdivider"></line>' +
+        '<text x="' + (-LEFT + 14) + '" y="26" class="mpanel">PENINSULAR MALAYSIA</text>' +
+        '<text x="' + (G.panels[1].x + 8) + '" y="26" class="mpanel">SARAWAK AND SABAH (BORNEO)</text>' +
+        shapes + labels + '</svg>';
+      var noKpjSwatch = '<span class="legend-item"><span class="swatch" style="background:repeating-linear-gradient(135deg,#f1f0ec,#f1f0ec 2px,#d6d3cc 2px,#d6d3cc 4px)"></span>No KPJ hospital (not zero)</span>';
       var mapLegend = metric === 'total'
-        ? '<div class="legend" style="margin-top:10px"><span class="small muted">Unique specialists per state (report bands):</span>' + w.countBands.map(function (b, i) { return '<span class="legend-item"><span class="swatch" style="background:' + countColors[i] + ';border:1px solid rgba(0,0,0,.08)"></span>' + b + '</span>'; }).join('') + '<span class="legend-item"><span class="swatch" style="background:repeating-linear-gradient(135deg,#f4f3f0,#f4f3f0 2px,#d9d6cf 2px,#d9d6cf 4px)"></span>No KPJ hospital</span></div>'
-        : '<div class="legend" style="margin-top:10px"><span class="small muted">Coverage index (network average = 100):</span>' + w.indexBands.slice().reverse().map(function (b) { return '<span class="legend-item"><span class="swatch" style="background:' + idxColors[b.label][0] + ';border:1px solid rgba(0,0,0,.08)"></span>' + esc(b.range) + ' ' + esc(b.label.toLowerCase()) + '</span>'; }).join('') + '<span class="legend-item"><span class="swatch" style="background:repeating-linear-gradient(135deg,#f4f3f0,#f4f3f0 2px,#d9d6cf 2px,#d9d6cf 4px)"></span>No KPJ hospital</span></div>';
-      var maps = '<div class="tilemaps"><div class="tm-block"><span class="tm-caption">Peninsular Malaysia</span><div class="tilemap">' + PEN.map(tile).join('') + '</div></div><div class="tm-block"><span class="tm-caption">Sarawak and Sabah</span><div class="tilemap borneo">' + BOR.map(tile).join('') + '</div></div></div>';
-      var mapCard = card('KPJ paediatric specialists by state', 'Schematic tile map (approximate positions, not to scale). Hover or focus a state for detail.', '<div style="margin-bottom:12px">' + segctl + '</div>' + maps + mapLegend +
-        '<p class="chart-note">' + (metric === 'total' ? 'Unique paediatricians and paediatric surgeons with at least one appointment in the state.' : 'Index = state KPJ specialists per million children aged 0–18 ÷ network rate (14.5) × 100.') + '</p>' + source('Report Figures 3.1 and 3.2; Tables 3.4 and 3.5.'));
+        ? '<div class="legend" style="margin-top:10px"><span class="small muted">Unique specialists per state (report bands):</span>' + w.countBands.map(function (b, i) { return '<span class="legend-item"><span class="swatch" style="background:' + countColors[i] + ';border:1px solid rgba(0,0,0,.08)"></span>' + b + '</span>'; }).join('') + noKpjSwatch + '</div>'
+        : '<div class="legend" style="margin-top:10px"><span class="small muted">Coverage index (network average = 100):</span>' + w.indexBands.slice().reverse().map(function (b) { return '<span class="legend-item"><span class="swatch" style="background:' + idxColors[b.label][0] + ';border:1px solid rgba(0,0,0,.08)"></span>' + esc(b.range) + ' ' + esc(b.label.toLowerCase()) + '</span>'; }).join('') + noKpjSwatch + '</div>';
+      var mapCard = card('KPJ paediatric specialists by state', 'Hover or tap a state for detail. Both panels are at the same scale; the South China Sea between them is not shown.', '<div style="margin-bottom:12px">' + segctl + '</div><div class="map-wrap" tabindex="0" role="region" aria-label="State map (scrollable on small screens)">' + svg + '</div><div class="map-hint">Swipe sideways to see Sarawak and Sabah.</div>' + mapLegend +
+        '<p class="chart-note">' + (metric === 'total' ? 'Unique paediatricians and paediatric surgeons with at least one appointment in the state, with resident (R), sessional (S) and visiting (V) split.' : 'Index = state KPJ specialists per million children aged 0–18 ÷ network rate (14.5) × 100.') + '</p>' + source('Report Figures 3.1 and 3.2; Tables 3.4 and 3.5. Boundaries: Natural Earth 1:10m admin-1 (public domain).'));
       var idxRows = w.states.filter(function (s) { return !s.noKpj && regionMatch(s.region); }).sort(function (a, b) { return b.index - a.index; });
       var idxChart = idxRows.length ? barChart(idxRows.map(function (s) {
         var b = idxBand(s.index);
@@ -562,7 +594,7 @@
         caption: 'Paediatric specialist workforce and coverage by state (Tables 3.4 and 3.5)',
         foot: function () { var n = w.statesNetwork; return S.regions.length ? '' : '<tr><th scope="row" class="row-head">Network (unique doctors)</th><td></td><td class="num">' + n.hosp + '</td><td class="num">' + n.paeds + '</td><td class="num">' + n.sub + '</td><td class="num">' + n.surg + '</td><td class="num">' + n.total + '</td><td class="num">' + n.r + ' / ' + n.s + ' / ' + n.v + '</td><td class="num">' + n.appts + '</td><td class="num">' + fmt(n.children) + 'k</td><td class="num">' + n.perMillion + '</td><td class="num">' + n.index + '</td></tr>'; }
       });
-      return '<div class="tilemap-wrap">' + mapCard + idxCard + '</div><div style="height:16px"></div>' + stTable +
+      return mapCard + '<div style="height:16px"></div>' + idxCard + '<div style="height:16px"></div>' + stTable +
         '<p class="chart-note">' + esc(w.statesNote) + ' States with no KPJ hospital are shown separately — this is not zero workforce.</p>' +
         '<div class="grid g-2" style="margin-top:16px">' + card(null, null, labelled('finding', ul(w.stateFindings))) +
         card(null, null, labelled('interp', p(w.stateInterpretation)) + labelled('rec', ul(w.stateRecommendations))) + '</div>';
@@ -1008,7 +1040,7 @@
     document.addEventListener('mouseout', function (e) { var t = e.target.closest('[data-tip]'); if (t && !t.contains(e.relatedTarget)) hideTip(); });
     document.addEventListener('focusin', function (e) { var t = e.target.closest && e.target.closest('[data-tip]'); if (t) showTip(t); else hideTip(); });
     document.addEventListener('focusout', hideTip);
-    window.addEventListener('scroll', hideTip, { passive: true });
+    window.addEventListener('scroll', function () { var a = document.activeElement; if (a && a.getAttribute && a.getAttribute('data-tip')) showTip(a); else hideTip(); }, { passive: true });
     ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function (ev) { document.addEventListener(ev, resetIdle, { passive: true }); });
   }
 
