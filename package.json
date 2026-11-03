@@ -1,0 +1,19 @@
+{
+  "name": "kpj-paediatric-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KPJ Paediatrics Services Overview — encrypted static dashboard for GitHub Pages.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node scripts/check-data.mjs",
+    "build": "node scripts/build.mjs",
+    "build:plain": "node scripts/build.mjs --plain",
+    "verify": "node scripts/verify.mjs",
+    "preview": "node scripts/preview.mjs",
+    "preview:plain": "node scripts/preview.mjs --plain"
+  },
+  "type": "module"
+}

@@ -1,0 +1,24 @@
+# ---- Never commit report content or secrets ----
+# Report-derived data and any unencrypted builds
+private/
+# Local password file
+.env
+.env.*
+!.env.example
+# Source reports and exports
+*.docx
+*.doc
+*.pdf
+*.xlsx
+*.xls
+*.pptx
+*.csv
+
+# Tooling
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# Local editor/assistant settings
+.claude/
