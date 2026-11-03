@@ -392,7 +392,7 @@
         p(bg.programme) + '<p><strong>Vision.</strong> ' + esc(bg.vision) + '</p><p><strong>Mission.</strong> ' + esc(bg.mission) + '</p>' +
         '<h4 style="margin:10px 0 6px">Strategic objectives</h4>' + ul(bg.objectives) +
         '<h4 style="margin:14px 0 6px">Paediatric AHS Subcommittee (Table 2.2)</h4>' + staticTable(['Role', 'Member'], bg.leadership, { caption: 'Paediatric clinical leadership' }));
-      return pageHead('Executive overview', m.title, m.reportTitle + ' — ' + m.reportSubtitle + '. ' + m.audience + ', prepared ' + m.preparationDate + '.') +
+      return pageHead('Executive overview', m.title, m.reportTitle + ' — ' + m.reportSubtitle + '. Prepared ' + m.preparationDate + '.') +
         status + '<div style="height:18px"></div>' + kpis +
         section('ov-position', 'Overall position', 'target', card(null, null, labelled('finding', p(o.overallPosition)) + '<p class="small muted" style="margin:0">' + esc(o.intro) + '</p>')) +
         section('ov-findings', 'Key findings', 'info', findings) +
