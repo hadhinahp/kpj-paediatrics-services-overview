@@ -309,6 +309,8 @@
   }
 
   // ------------------------------------------------------------------ tables
+  // Table caption shown as a plain note above the table (outside the border).
+  function tableNote(text) { return text ? '<p class="table-note">' + esc(text) + '</p>' : ''; }
   function sortVal(v) {
     if (v == null) return -Infinity;
     if (typeof v === 'number') return v;
@@ -345,13 +347,14 @@
         }).join('') + '</tr>';
       }).join('');
       var foot = opts.foot ? '<tfoot>' + opts.foot(rows) + '</tfoot>' : '';
-      return '<div id="tw-' + id + '"><div class="table-wrap" tabindex="0" role="region" aria-label="' + esc(opts.caption || 'Table') + ' (scrollable)"><table class="data ' + (opts.cls || '') + '">' + (opts.caption ? '<caption>' + esc(opts.caption) + (cols.some(function (c) { return c.sortable !== false; }) ? ' — select a column heading to sort.' : '') + '</caption>' : '') + '<thead>' + head + '</thead><tbody>' + body + '</tbody>' + foot + '</table></div></div>';
+      var capText = opts.caption ? opts.caption + (cols.some(function (c) { return c.sortable !== false; }) ? ' — select a column heading to sort.' : '') : '';
+      return '<div id="tw-' + id + '">' + tableNote(capText) + '<div class="table-wrap" tabindex="0" role="region" aria-label="' + esc(opts.caption || 'Table') + ' (scrollable)"><table class="data ' + (opts.cls || '') + '">' + (capText ? '<caption class="sr-only">' + esc(capText) + '</caption>' : '') + '<thead>' + head + '</thead><tbody>' + body + '</tbody>' + foot + '</table></div></div>';
     };
     return TABLES[id]();
   }
   function staticTable(head, rows, opts) {
     opts = opts || {};
-    return '<div class="table-wrap" tabindex="0" role="region" aria-label="' + esc(opts.caption || 'Table') + ' (scrollable)"><table class="data">' + (opts.caption ? '<caption>' + esc(opts.caption) + '</caption>' : '') +
+    return tableNote(opts.caption) + '<div class="table-wrap" tabindex="0" role="region" aria-label="' + esc(opts.caption || 'Table') + ' (scrollable)"><table class="data">' + (opts.caption ? '<caption class="sr-only">' + esc(opts.caption) + '</caption>' : '') +
       '<thead><tr>' + head.map(function (h) { return '<th scope="col">' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>' +
       rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return i === 0 ? '<th scope="row" class="row-head">' + esc(c) + '</th>' : '<td' + (opts.wrap ? ' class="wrap-text"' : '') + '>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
       '</tbody></table></div>';
@@ -671,7 +674,8 @@
             body += '</tr>';
           });
         });
-        matrix = '<div class="table-wrap" tabindex="0" role="region" aria-label="Hospital service matrix (scrollable)"><table class="data matrix"><caption>' + (tab === 'a2' ? 'Inpatient, neonatal, critical care and surgical services (Table A.2)' : 'Subspecialty, developmental, therapy and safeguarding services (Table A.3)') + '</caption><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+        var mcap = tab === 'a2' ? 'Inpatient, neonatal, critical care and surgical services (Table A.2)' : 'Subspecialty, developmental, therapy and safeguarding services (Table A.3)';
+        matrix = tableNote(mcap) + '<div class="table-wrap" tabindex="0" role="region" aria-label="Hospital service matrix (scrollable)"><table class="data matrix"><caption class="sr-only">' + esc(mcap) + '</caption><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
       }
       var tabs = '<div class="seg-ctl" role="group" aria-label="Service group"><button type="button" data-act="mtab" data-v="a2" aria-pressed="' + (tab === 'a2') + '">Inpatient, neonatal and critical care</button><button type="button" data-act="mtab" data-v="a3" aria-pressed="' + (tab === 'a3') + '">Subspecialty, development and safeguarding</button></div>';
       var legendHtml = '<div class="legend" style="margin:12px 0">' + D.codeLegend.map(function (c) { return '<span class="legend-item">' + codeChip(c.code) + ' ' + esc(c.label) + '</span>'; }).join('') + '<span class="legend-item"><span class="code code-na">n/a</span> No service data</span></div>';

@@ -222,7 +222,7 @@ table.data td.num, table.data th.num { text-align: right; font-variant-numeric: 
 table.data td.ctr, table.data th.ctr { text-align: center; }
 table.data tfoot td { font-weight: 700; background: #f7f8f9; border-top: 1px solid var(--line-strong); border-bottom: 0; }
 table.data .row-head { font-weight: 600; color: var(--navy-900); }
-table.data caption { text-align: left; padding: 0 0 8px; font-size: 13px; color: var(--muted); caption-side: top; }
+.table-note { margin: 0 0 8px; font-size: 13px; color: var(--muted); line-height: 1.45; }
 .sort-btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 .sort-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 .sort-btn .sort-ind { width: 10px; display: inline-block; color: var(--muted); font-size: 10px; }
