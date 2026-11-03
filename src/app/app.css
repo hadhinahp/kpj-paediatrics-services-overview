@@ -2,7 +2,7 @@
    Contains no report content. Palette complements the KPJ logo (bronze #997f62). */
 
 :root {
-  color-scheme: light;
+  color-scheme: only light;
   --navy-950: #0b2136;
   --navy-900: #0f2a44;
   --navy-800: #16365a;
@@ -436,3 +436,7 @@ dialog.hosp-dialog::backdrop { background: rgba(11, 33, 54, .45); }
   .mymap { min-width: 860px; }
   .map-hint { display: block; }
 }
+
+/* Always light: opt out of browser / OS forced dark modes */
+html, body { color-scheme: only light; background-color: var(--page); }
+input, select, textarea, button { color-scheme: only light; }
