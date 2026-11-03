@@ -89,7 +89,7 @@ if (args.has('--plain')) {
   const out = rel('private', 'build');
   fs.mkdirSync(path.join(out, 'assets'), { recursive: true });
   fs.copyFileSync(rel('src', 'assets', 'kpj-logo.png'), path.join(out, 'assets', 'kpj-logo.png'));
-  const page = `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><meta name="color-scheme" content="only light"><title>KPJ Paediatrics Services Overview (UNENCRYPTED PREVIEW)</title><style>${css}</style></head><body>${html}<script>${js}<\/script><script>KPJDashboard.start(${JSON.stringify(fullData)}, { onLock: function () { alert('Lock is disabled in the unencrypted preview.'); } });<\/script></body></html>`;
+  const page = `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><meta name="color-scheme" content="light dark"><title>KPJ Paediatrics Services Overview (UNENCRYPTED PREVIEW)</title><style>${css}</style></head><body>${html}<script>${js}<\/script><script>KPJDashboard.start(${JSON.stringify(fullData)}, { onLock: function () { alert('Lock is disabled in the unencrypted preview.'); } });<\/script></body></html>`;
   fs.writeFileSync(path.join(out, 'dashboard-plain.html'), page);
   console.log('Unencrypted preview: private/build/dashboard-plain.html (never publish or commit this file).');
 }

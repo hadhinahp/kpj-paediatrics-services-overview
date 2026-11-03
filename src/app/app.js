@@ -299,7 +299,12 @@
     var rows = items.map(function (it) {
       var bars = (it.bars || []).map(function (b) {
         var l = (b[0] - 1) / months * 100, w = (b[1] - b[0] + 1) / months * 100;
-        return '<div class="g-bar ' + (it.teal ? 'teal' : '') + '" style="left:' + l + '%;width:' + w + '%" data-tip="' + esc(it.tip || (it.label + ': ' + it.timing)) + '">' + esc(it.barLabel || it.timing) + '</div>';
+        var text = esc(it.barLabel || it.timing), tip = esc(it.tip || (it.label + ': ' + it.timing));
+        // Short bars that end early: label sits to the right of the bar in dark text,
+        // so it is never white text on the white track.
+        var outside = b[1] <= 16;
+        return '<div class="g-bar ' + (it.teal ? 'teal' : '') + '" style="left:' + l + '%;width:' + w + '%" data-tip="' + tip + '">' + (outside ? '' : text) + '</div>' +
+          (outside ? '<span class="g-out" style="left:calc(' + (l + w) + '% + 6px)">' + text + '</span>' : '');
       }).join('');
       var early = it.early ? '<div class="g-early" data-tip="Interim cover early (no month given in the report)"></div>' : '';
       return '<div class="g-row" role="listitem"><div class="g-label">' + esc(it.label) + (it.sub ? '<span class="sub">' + esc(it.sub) + '</span>' : '') + '</div><div class="g-track">' + early + bars + '</div></div>';

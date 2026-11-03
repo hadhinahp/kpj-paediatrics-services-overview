@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
-<meta name="color-scheme" content="only light">
-<meta name="supported-color-schemes" content="light only">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <meta name="theme-color" content="#faf8f4">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>KPJ Paediatrics Services Overview · Sign in</title>
@@ -48,6 +48,7 @@
   .foot { margin-top: 18px; font-size: 12.5px; color: var(--muted); line-height: 1.5; text-align: center; padding: 0 6px; }
   .foot strong { color: var(--bronze); }
   noscript .error { display: block; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: only light; } html, body { background-color: #faf8f4; color: #1b2733; } .panel { background: #fff; } }
   @media (max-width: 480px) { .panel { padding: 26px 20px 22px; } h1 { font-size: 21px; } .logo { height: 34px; } }
 </style>
 </head>
